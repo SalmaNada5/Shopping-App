@@ -13,6 +13,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SignUpUseCase signUpUseCase;
   final LoginWithGmailUseCase loginWithGmailUseCase;
   final LoginUseCase loginUseCase;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   //* login
   final loginFormKey = GlobalKey<FormState>();
@@ -45,7 +46,6 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthInitial());
       final Either<Failure, User?> res = await loginUseCase(email, password);
       emit(_loginSuccessOrFailureState(res));
-      // changeEmailValidity();
     }
   }
 
@@ -153,6 +153,40 @@ class AuthCubit extends Cubit<AuthState> {
       isValidPassword = true;
       emit(PasswordValidationChangedState());
       return null;
+    }
+  }
+
+  final forgotPassFormKey = GlobalKey<FormState>();
+
+  //* Forgot password
+  void onForgotPasswordSendButtonTapped() async {
+    if (forgotPassFormKey.currentState!.validate()) {
+      emit(AuthInitial());
+      try {
+        logWarning('cur email ${_auth.currentUser?.email}');
+        if (_auth.currentUser?.email == emailController.text.trim()) {
+          await _auth.sendPasswordResetEmail(
+              email: emailController.text.trim());
+          logSuccess('email sent');
+          Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
+          ScaffoldMessenger.of(Constants.navigatorKey.currentContext!)
+              .showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Password reset email sent successfully, Please login again with your new password.'),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(Constants.navigatorKey.currentContext!)
+              .showSnackBar(
+            const SnackBar(
+              content: Text('This email doesn\'t match current user email!'),
+            ),
+          );
+        }
+      } catch (e) {
+        logError('error in onForgotPasswordSendButtonTapped: $e');
+      }
     }
   }
 }

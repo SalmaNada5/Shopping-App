@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AuthHeaderWidget extends StatelessWidget {
-  const AuthHeaderWidget({super.key, required this.title});
+  const AuthHeaderWidget({super.key, required this.title, this.bottomPadding = 70});
   final String title;
+  final double bottomPadding;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 70, top: 20),
+      padding: EdgeInsets.only(bottom: bottomPadding, top: 20),
       child: Text(
         title,
         style: const TextStyle(

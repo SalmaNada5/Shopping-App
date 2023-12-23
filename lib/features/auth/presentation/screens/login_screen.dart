@@ -1,3 +1,4 @@
+import 'package:e_commerce/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:e_commerce/utils/exports.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -47,7 +48,9 @@ class LoginScreen extends StatelessWidget {
                       height: 16,
                     ),
                     AuthAlreadyHaveAnAccountOrForgotPassWidget(
-                        onTap: () {}, title: 'Forgot your password?'),
+                        onTap: () =>
+                            Constants.navigateTo(const ForgotPasswordScreen()),
+                        title: 'Forgot your password?'),
                     const SizedBox(
                       height: 40,
                     ),
