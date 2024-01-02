@@ -10,4 +10,6 @@ abstract class AuthDomainRepo {
   Future<Either<Failure, User?>> signUp(
       String name, String email, String password);
   Future<Either<Failure, User?>> login(String email, String password);
+    Future<Either<Failure, Unit>> loginWithFacebook();
+
 }

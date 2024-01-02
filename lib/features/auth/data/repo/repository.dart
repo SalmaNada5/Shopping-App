@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:e_commerce/core/errors/exceptions.dart';
 import 'package:e_commerce/core/errors/failures.dart';
 import 'package:e_commerce/features/auth/data/source/local/local_source.dart';
 import 'package:e_commerce/features/auth/data/source/remote/remote_source.dart';
 import 'package:e_commerce/features/auth/domain/repo/repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthDataRepo implements AuthDomainRepo {
   final AuthRemoteSourceImplement authRemoteSourceImplement;
@@ -37,7 +37,7 @@ class AuthDataRepo implements AuthDomainRepo {
     try {
       authRemoteSourceImplement.signOutFunction(googleSignIn);
       return const Right(unit);
-    }  on ServerException catch (e) {
+    } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
@@ -45,27 +45,42 @@ class AuthDataRepo implements AuthDomainRepo {
   }
 
   @override
-  Future<Either<Failure, User?>> signUp(String name, String email, String password) async{
-    try{
-     final user = await authRemoteSourceImplement.signUpFunction(name, email, password);
-     return Right(user);
-    } on ServerException catch(e){
+  Future<Either<Failure, User?>> signUp(
+      String name, String email, String password) async {
+    try {
+      final user =
+          await authRemoteSourceImplement.signUpFunction(name, email, password);
+      return Right(user);
+    } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
     }
   }
-  
+
   @override
-  Future<Either<Failure, User?>> login(String email, String password) async{
-try{
-     final user = await authRemoteSourceImplement.loginFunction(email, password);
-     return Right(user);
-    } on ServerException catch(e){
+  Future<Either<Failure, User?>> login(String email, String password) async {
+    try {
+      final user =
+          await authRemoteSourceImplement.loginFunction(email, password);
+      return Right(user);
+    } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
     }
   }
-  
+
+  @override
+  Future<Either<Failure, Unit>> loginWithFacebook() async {
+    try {
+      await authRemoteSourceImplement.logInWithFacebook();
+        return const Right(unit);
+      
+    } on ServerException catch (e) {
+      return left(ServerFailure(message: e.message));
+    } on OfflineException catch (e) {
+      return left(OfflineFailure(message: e.message));
+    }
+  }
 }

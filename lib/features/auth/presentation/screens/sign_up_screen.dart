@@ -1,5 +1,4 @@
 import 'package:e_commerce/utils/exports.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -9,47 +8,18 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-  void signInWithGoogleSilently() async {
-    try {
-      await googleSignIn.signInSilently().then((account) {
-        try {
-          if (account != null) {
-            Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
-            logWarning('Logged in silently..gmail login');
-          }
-        } catch (e) {
-          logError('Error signing in silently: $e');
-        }
-      });
-    } catch (error) {
-      Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
-      logWarning('Error signing in silently: $error');
-    }
-  }
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<void> _checkAuthStatus() async {
-    User? user = _auth.currentUser;
-
-    if (user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
-      });
-    }
-  }
-
   @override
   void initState() {
+    final AuthCubit authCubit =
+        BlocProvider.of<AuthCubit>(context, listen: false);
+    authCubit.init();
     super.initState();
-    signInWithGoogleSilently();
-    _checkAuthStatus();
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context, listen: false);
+    final AuthCubit authCubit =
+        BlocProvider.of<AuthCubit>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(

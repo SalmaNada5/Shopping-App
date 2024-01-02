@@ -36,7 +36,7 @@
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
+	    <string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
@@ -45,5 +45,25 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+    <array>
+    <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+        <string>fbAPP-ID</string>
+    </array>
+        </dict>
+    </array>
+    <key>FacebookAppID</key>
+    <string>355368507137604</string>
+    <key>FacebookClientToken</key>
+    <string>6f5bf88d33deeb00f193aa6ba1086d57</string>
+    <key>FacebookDisplayName</key>
+    <string>e-commerce</string>
+	<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>fbapi</string>
+  <string>fb-messenger-share-api</string>
+</array>
 </dict>
 </plist>

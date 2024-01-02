@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:e_commerce/features/auth/domain/usecase/login.dart';
+import 'package:e_commerce/features/auth/domain/usecase/login_with_facebook.dart';
 import 'package:e_commerce/features/auth/domain/usecase/sign_up.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:e_commerce/utils/extensions.dart';
@@ -8,18 +9,58 @@ import 'package:firebase_auth/firebase_auth.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this.loginWithGmailUseCase, this.signUpUseCase, this.loginUseCase)
+  AuthCubit(this.loginWithGmailUseCase, this.signUpUseCase, this.loginUseCase,
+      this.loginWithFacebookUseCase)
       : super(AuthInitial());
   final SignUpUseCase signUpUseCase;
   final LoginWithGmailUseCase loginWithGmailUseCase;
   final LoginUseCase loginUseCase;
+  final LoginWithFacebookUseCase loginWithFacebookUseCase;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  void init() async {
+//? check already signed in with google
+    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+    try {
+      await googleSignIn.signInSilently().then((account) {
+        try {
+          if (account != null) {
+            Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
+            logWarning('Logged in silently..gmail login');
+          }
+        } catch (e) {
+          logError('Error signing in silently: $e');
+        }
+      });
+    } catch (error) {
+      Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
+      logWarning('Error signing in silently: $error');
+    }
+
+//? check user auth
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
+      });
+    }
+
+//? check already signed in with facebook
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        logWarning('User is currently signed out');
+      } else {
+        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
+      }
+    });
+  }
 
   //* login
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GoogleSignIn googleSignIn = GoogleSignIn();
+
   //? login with gmail.
   void loginWithGmail() async {
     emit(AuthInitial());
@@ -34,7 +75,7 @@ class AuthCubit extends Cubit<AuthState> {
       Constants.errorMessage(title: 'Unable to login!', description: l.message);
       return LoginFailure();
     }, (r) {
-      logSuccess('Loged in with Gmail with account: $r');
+      logSuccess('Logged in with Gmail with account: $r');
       Constants.navigateTo(const HomePage());
       return LoginSuccess();
     });
@@ -62,6 +103,29 @@ class AuthCubit extends Cubit<AuthState> {
       } else {
         return LoginFailure();
       }
+    });
+  }
+
+//? login with facebook
+  void loginWithFacebook() async {
+    emit(AuthInitial());
+    final Either<Failure, Unit> res = await loginWithFacebookUseCase();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        emit(_loginWithFacebookSuccessOrFailState(res));
+      }
+    });
+    // emit(_loginWithFacebookSuccessOrFailState(res));
+  }
+
+  AuthState _loginWithFacebookSuccessOrFailState(Either<Failure, Unit> res) {
+    return res.fold((l) {
+      Constants.errorMessage(title: 'Unable to login!', description: l.message);
+      return LoginFailure();
+    }, (r) {
+      logSuccess('Logged in with Facebook with account: $r');
+      Constants.navigateTo(const HomePage());
+      return LoginSuccess();
     });
   }
 
