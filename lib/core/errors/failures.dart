@@ -8,10 +8,12 @@ sealed class Failure extends Equatable {
   List<Object?> get props => [message];
 }
 
-final class ServerFailure extends Failure {
-  const ServerFailure({required super.message});
+final class FirebaseFailure extends Failure {
+  const FirebaseFailure({required super.message});
 }
-
+final class FirebaseAuthFailure extends Failure {
+  const FirebaseAuthFailure({required super.message});
+}
 final class OfflineFailure extends Failure {
   const OfflineFailure({required super.message});
 }

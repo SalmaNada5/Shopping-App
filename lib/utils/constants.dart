@@ -35,6 +35,14 @@ mixin Constants {
     );
   }
 
+  static void showSnackbar(String message) {
+    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
   static void hideLoadingOrNavBack() => navigatorKey.currentState!.pop();
 
   static Future<void> navigateTo(Widget screen,

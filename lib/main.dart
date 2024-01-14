@@ -1,3 +1,4 @@
+import 'package:e_commerce/app.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -11,23 +12,3 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthCubit>.value(value: di.sl()),
-      ],
-      child: MaterialApp(
-        navigatorKey: Constants.navigatorKey,
-        theme: ThemeData(
-          useMaterial3: false,
-          primaryColor: const Color(0xffDB3022),
-        ),
-        home: const LoginScreen(),
-      ),
-    );
-  }
-}

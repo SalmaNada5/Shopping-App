@@ -4,7 +4,8 @@ import 'package:e_commerce/core/errors/failures.dart';
 import 'package:e_commerce/features/auth/data/source/local/local_source.dart';
 import 'package:e_commerce/features/auth/data/source/remote/remote_source.dart';
 import 'package:e_commerce/features/auth/domain/repo/repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthDataRepo implements AuthDomainRepo {
@@ -25,62 +26,76 @@ class AuthDataRepo implements AuthDomainRepo {
       } else {
         return const Left(OfflineFailure(message: 'No account selected'));
       }
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+    } on FirebaseAuthException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
+    } on FirebaseException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     }
   }
 
   @override
-  Either<Failure, Unit> signOut(GoogleSignIn googleSignIn) {
+  Either<Failure, Unit> signOut() {
     try {
-      authRemoteSourceImplement.signOutFunction(googleSignIn);
+      authRemoteSourceImplement.signOutFunction();
+      authLocalSourceImplement.removeUserId;
       return const Right(unit);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+    } on FirebaseAuthException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
+    } on FirebaseException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     }
   }
 
   @override
-  Future<Either<Failure, User?>> signUp(
+  Future<Either<Failure, firebase.User?>> signUp(
       String name, String email, String password) async {
     try {
       final user =
           await authRemoteSourceImplement.signUpFunction(name, email, password);
+      authLocalSourceImplement.setUserId(user?.uid ?? '');
       return Right(user);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+    } on FirebaseAuthException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
+    } on FirebaseException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     }
   }
 
   @override
-  Future<Either<Failure, User?>> login(String email, String password) async {
+  Future<Either<Failure, firebase.User?>> login(
+      String email, String password) async {
     try {
       final user =
           await authRemoteSourceImplement.loginFunction(email, password);
+      authLocalSourceImplement.setUserId(user?.uid ?? '');
       return Right(user);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+    } on FirebaseAuthException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
+    } on FirebaseException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     }
   }
 
   @override
-  Future<Either<Failure, Unit>> loginWithFacebook() async {
+  Future<Either<Failure, LoginResult?>> loginWithFacebook() async {
     try {
-      await authRemoteSourceImplement.logInWithFacebook();
-        return const Right(unit);
-      
-    } on ServerException catch (e) {
-      return left(ServerFailure(message: e.message));
+      final user = await authRemoteSourceImplement.logInWithFacebook();
+      authLocalSourceImplement.setUserId(user?.accessToken?.userId ?? '');
+      return Right(user);
+    } on FirebaseAuthException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     } on OfflineException catch (e) {
-      return left(OfflineFailure(message: e.message));
+      return Left(OfflineFailure(message: e.message));
+    } on FirebaseException catch (e) {
+      return Left(FirebaseFailure(message: e.message));
     }
   }
 }

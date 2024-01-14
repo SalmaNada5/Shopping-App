@@ -1,25 +1,13 @@
 import 'package:e_commerce/utils/exports.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
-
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  @override
-  void initState() {
-    final AuthCubit authCubit =
-        BlocProvider.of<AuthCubit>(context, listen: false);
-    authCubit.init();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final AuthCubit authCubit =
         BlocProvider.of<AuthCubit>(context, listen: false);
+    authCubit.init();
     return Scaffold(
       body: SafeArea(
         child: Padding(

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:e_commerce/features/auth/presentation/widgets/auth_header_widget.dart';
+import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

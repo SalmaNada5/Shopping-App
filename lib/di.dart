@@ -38,7 +38,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthLocalSourceImplement>(
       () => AuthLocalSourceImplement(sharedPreferences: sl()));
   //?cubits
-  sl.registerFactory<AuthCubit>(() => AuthCubit(sl(), sl(), sl(), sl()));
+  sl.registerFactory<AuthCubit>(() => AuthCubit(sl(), sl(), sl(), sl(),sl(),sl()));
 
   //? Core
   final SharedPreferences sharedPreferences =

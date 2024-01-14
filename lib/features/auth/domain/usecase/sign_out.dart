@@ -7,6 +7,6 @@ class SignOutUseCase {
 
   SignOutUseCase({required this.authDomainRepo});
 
- Either<Failure, Unit> call(GoogleSignIn googleSignIn) =>
-      authDomainRepo.signOut(googleSignIn);
+ Either<Failure, Unit> call() =>
+      authDomainRepo.signOut();
 }

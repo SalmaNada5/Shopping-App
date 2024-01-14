@@ -1,58 +1,90 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:e_commerce/features/auth/domain/usecase/login.dart';
 import 'package:e_commerce/features/auth/domain/usecase/login_with_facebook.dart';
+import 'package:e_commerce/features/auth/domain/usecase/sign_out.dart';
 import 'package:e_commerce/features/auth/domain/usecase/sign_up.dart';
+import 'package:e_commerce/features/home/presentation/screens/main_page.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:e_commerce/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this.loginWithGmailUseCase, this.signUpUseCase, this.loginUseCase,
-      this.loginWithFacebookUseCase)
+  AuthCubit(
+      this.loginWithGmailUseCase,
+      this.signUpUseCase,
+      this.loginUseCase,
+      this.loginWithFacebookUseCase,
+      this._sharedPreferences,
+      this.signOutUseCase)
       : super(AuthInitial());
   final SignUpUseCase signUpUseCase;
   final LoginWithGmailUseCase loginWithGmailUseCase;
   final LoginUseCase loginUseCase;
   final LoginWithFacebookUseCase loginWithFacebookUseCase;
+  final SignOutUseCase signOutUseCase;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final SharedPreferences _sharedPreferences;
   void init() async {
-//? check already signed in with google
-    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-    try {
-      await googleSignIn.signInSilently().then((account) {
-        try {
-          if (account != null) {
-            Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
-            logWarning('Logged in silently..gmail login');
-          }
-        } catch (e) {
-          logError('Error signing in silently: $e');
-        }
-      });
-    } catch (error) {
-      Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
-      logWarning('Error signing in silently: $error');
-    }
+    _checkUserExistence();
+// //? check already signed in with google
+//     GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+//     try {
+//       await googleSignIn.signInSilently().then((account) {
+//         try {
+//           if (account != null) {
+//             Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+//             logWarning('Logged in silently..gmail login');
+//           }
+//         } catch (e) {
+//           logError('Error signing in silently: $e');
+//         }
+//       });
+//     } catch (error) {
+//       Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
+//       logWarning('Error signing in silently: $error');
+//     }
 
-//? check user auth
-    User? user = _auth.currentUser;
+// //? check user auth
+//     User? user = _auth.currentUser;
 
-    if (user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
-      });
-    }
+//     if (user != null) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+    // });
+//     }
 
-//? check already signed in with facebook
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        logWarning('User is currently signed out');
-      } else {
-        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
+// //? check already signed in with facebook
+//     FirebaseAuth.instance.authStateChanges().listen((User? user) {
+//       if (user == null) {
+//         logWarning('User is currently signed out');
+//       } else {
+//         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+//       }
+//     });
+  }
+
+  void _checkUserExistence() async {
+    String? userId = _sharedPreferences.getString('userId');
+    logWarning('id: $userId');
+    if (userId != null && userId != '') {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (userDoc.exists) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+        });
       }
-    });
+    } else {
+      logWarning('user with id: $userId does not exist!');
+    }
   }
 
   //* login
@@ -72,11 +104,11 @@ class AuthCubit extends Cubit<AuthState> {
   AuthState _loginWithGmailSuccessOrFailState(
       Either<Failure, GoogleSignInAccount> res) {
     return res.fold((l) {
-      Constants.errorMessage(title: 'Unable to login!', description: l.message);
+      Constants.showSnackbar(l.message);
       return LoginFailure();
     }, (r) {
       logSuccess('Logged in with Gmail with account: $r');
-      Constants.navigateTo(const HomePage());
+      Constants.navigateTo(const MainPage());
       return LoginSuccess();
     });
   }
@@ -85,20 +117,22 @@ class AuthCubit extends Cubit<AuthState> {
   void login({required String email, required String password}) async {
     if (loginFormKey.currentState!.validate()) {
       emit(AuthInitial());
+      Constants.showLoading();
       final Either<Failure, User?> res = await loginUseCase(email, password);
+      Constants.hideLoadingOrNavBack();
       emit(_loginSuccessOrFailureState(res));
     }
   }
 
   AuthState _loginSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
-      Constants.errorMessage(title: 'Unable to Login!', description: l.message);
+      Constants.showSnackbar(l.message);
       return LoginFailure();
     }, (r) {
       if (r != null) {
         logSuccess('Logged in with account: $r');
         logWarning('$r');
-        Constants.navigateTo(const HomePage(), pushAndRemoveUntil: true);
+        Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
         return LoginSuccess();
       } else {
         return LoginFailure();
@@ -109,22 +143,22 @@ class AuthCubit extends Cubit<AuthState> {
 //? login with facebook
   void loginWithFacebook() async {
     emit(AuthInitial());
-    final Either<Failure, Unit> res = await loginWithFacebookUseCase();
+    final Either<Failure, LoginResult?> res = await loginWithFacebookUseCase();
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
         emit(_loginWithFacebookSuccessOrFailState(res));
       }
     });
-    // emit(_loginWithFacebookSuccessOrFailState(res));
   }
 
-  AuthState _loginWithFacebookSuccessOrFailState(Either<Failure, Unit> res) {
+  AuthState _loginWithFacebookSuccessOrFailState(
+      Either<Failure, LoginResult?> res) {
     return res.fold((l) {
-      Constants.errorMessage(title: 'Unable to login!', description: l.message);
+      Constants.showSnackbar(l.message);
       return LoginFailure();
     }, (r) {
       logSuccess('Logged in with Facebook with account: $r');
-      Constants.navigateTo(const HomePage());
+      Constants.navigateTo(const MainPage());
       return LoginSuccess();
     });
   }
@@ -152,13 +186,31 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthState _signUpSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
-      Constants.errorMessage(
-          title: 'Unable to Sign Up!', description: l.message);
+      Constants.showSnackbar(l.message);
+
       return SignUpFailure();
     }, (r) {
       logSuccess('Signed Up with account: $r');
-      Constants.navigateTo(const HomePage());
+      Constants.navigateTo(const MainPage());
       return SignUpSuccess();
+    });
+  }
+
+//* signout
+  void signOutFunction() {
+    emit(AuthInitial());
+    final Either<Failure, Unit> res = signOutUseCase();
+    emit(_signOutSuccessOrFailureState(res));
+  }
+
+  AuthState _signOutSuccessOrFailureState(Either<Failure, Unit> res) {
+    return res.fold((l) {
+      Constants.showSnackbar(l.message);
+      return SignOutFailure();
+    }, (r) {
+      logSuccess('Signed out Successfully');
+      Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
+      return SignOutSuccess();
     });
   }
 
