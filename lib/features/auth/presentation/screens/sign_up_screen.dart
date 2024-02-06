@@ -1,4 +1,5 @@
 import 'package:e_commerce/utils/exports.dart';
+import 'package:e_commerce/utils/extensions.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -11,9 +12,11 @@ class SignUpScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: context.mediaQuery.viewInsets.bottom),
+          child: Wrap(
             children: [
               const AuthHeaderWidget(title: 'Sign up'),
               Form(
@@ -22,34 +25,55 @@ class SignUpScreen extends StatelessWidget {
                   children: [
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
-                        return AuthTextFormField(
-                          controller: authCubit.nameController,
-                          hintText: 'Name',
-                          validator: (value) =>
-                              authCubit.checkNameValidation(value ?? ''),
-                          isValidInputData: authCubit.isValidName,
+                        return BlocBuilder<AuthCubit, AuthState>(
+                          bloc: authCubit,
+                          buildWhen: (previous, current) =>
+                              current is NameValidationChangedState,
+                          builder: (context, state) {
+                            return AuthTextFormField(
+                              isValid: authCubit.isValidName,
+                              controller: authCubit.nameController,
+                              hintText: 'Name',
+                              validator: (value) =>
+                                  authCubit.checkNameValidation(value ?? ''),
+                            );
+                          },
                         );
                       },
                     ),
                     const SizedBox(
                       height: 8,
                     ),
-                    AuthTextFormField(
-                      controller: authCubit.emailController,
-                      hintText: 'Email',
-                      validator: (value) =>
-                          authCubit.checkEmailValidation(value ?? ''),
-                      isValidInputData: true,
+                    BlocBuilder<AuthCubit, AuthState>(
+                      bloc: authCubit,
+                      buildWhen: (previous, current) =>
+                          current is EmailValidationChangedState,
+                      builder: (context, state) {
+                        return AuthTextFormField(
+                          isValid: authCubit.isValidEmail,
+                          controller: authCubit.emailController,
+                          hintText: 'Email',
+                          validator: (value) =>
+                              authCubit.checkEmailValidation(value ?? ''),
+                        );
+                      },
                     ),
                     const SizedBox(
                       height: 8,
                     ),
-                    AuthTextFormField(
-                      controller: authCubit.passwordController,
-                      hintText: 'Password',
-                      validator: (value) =>
-                          authCubit.checkNameValidation(value ?? ''),
-                      isValidInputData: false,
+                    BlocBuilder<AuthCubit, AuthState>(
+                      bloc: authCubit,
+                      buildWhen: (previous, current) =>
+                          current is PasswordValidationChangedState,
+                      builder: (context, state) {
+                        return AuthTextFormField(
+                          isValid: authCubit.isValidPassword,
+                          controller: authCubit.passwordController,
+                          hintText: 'Password',
+                          validator: (value) =>
+                              authCubit.checkPasswordValidation(value ?? ''),
+                        );
+                      },
                     ),
                     const SizedBox(
                       height: 16,

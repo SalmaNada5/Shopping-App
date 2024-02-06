@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/core/errors/exceptions.dart' as ex;
 import 'package:e_commerce/core/errors/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:e_commerce/core/errors/exceptions.dart' as ex;
 
 abstract class AuthRemoteSource {
   Future<GoogleSignInAccount?> loginWithGoogleFunction(
@@ -29,17 +29,16 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
           await FirebaseAuth.instance.signInWithCredential(credential);
       _storeUserData(userCredential.user!);
       return account;
-    } catch (e) { 
+    } catch (e) {
       logError('error in loginWithGoogleFunction: $e');
       if (e is FirebaseAuthException) {
         throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if(e is FirebaseAuthException){
-                throw ex.FirebaseAuthException(e.message ?? 'Error occured');
-      } else{
+      } else if (e is FirebaseAuthException) {
+        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+      } else {
         throw ex.OfflineException('$e');
       }
     }
-    
   }
 
   @override
@@ -50,9 +49,9 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
       logError('error in signOutFunction');
       if (e is FirebaseAuthException) {
         throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if(e is FirebaseAuthException){
-                throw ex.FirebaseAuthException(e.message ?? 'Error occured');
-      } else{
+      } else if (e is FirebaseAuthException) {
+        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+      } else {
         throw ex.OfflineException('$e');
       }
     }
@@ -75,9 +74,9 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
       logError('Error in signUpFunction: $e');
       if (e is FirebaseAuthException) {
         throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if(e is FirebaseAuthException){
-                throw ex.FirebaseAuthException(e.message ?? 'Error occured');
-      } else{
+      } else if (e is FirebaseAuthException) {
+        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+      } else {
         throw ex.OfflineException('$e');
       }
     }
@@ -92,7 +91,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
         password: password,
       );
       if (authResult.user != null) {
-        logSuccess('Sign in successful: ${authResult.user?.displayName}');
+        logSuccess('Sign in successfully: ${authResult.user?.displayName}');
         return authResult.user;
       } else {
         logError('User information is null');
@@ -102,9 +101,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
       logError('Error in loginFunction: $e');
       if (e is FirebaseAuthException) {
         throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if(e is FirebaseAuthException){
-                throw ex.FirebaseAuthException(e.message ?? 'Error occured');
-      } else{
+      } else {
         throw ex.OfflineException('$e');
       }
     }
@@ -130,9 +127,9 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
       logError('Error signing in with Facebook: $e');
       if (e is FirebaseAuthException) {
         throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if(e is FirebaseAuthException){
-                throw ex.FirebaseAuthException(e.message ?? 'Error occured');
-      } else{
+      } else if (e is FirebaseAuthException) {
+        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+      } else {
         throw ex.OfflineException('$e');
       }
     }

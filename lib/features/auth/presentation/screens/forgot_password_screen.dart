@@ -36,11 +36,12 @@ class ForgotPasswordScreen extends StatelessWidget {
                 return Form(
                   key: authCubit.forgotPassFormKey,
                   child: AuthTextFormField(
-                      controller: authCubit.emailController,
-                      hintText: 'Email',
-                      validator: (value) =>
-                          authCubit.checkEmailValidation(value ?? ''),
-                      isValidInputData: authCubit.isValidEmail),
+                    isValid: authCubit.isValidPassword,
+                    controller: authCubit.emailController,
+                    hintText: 'Email',
+                    validator: (value) =>
+                        authCubit.checkEmailValidation(value ?? ''),
+                  ),
                 );
               },
             ),

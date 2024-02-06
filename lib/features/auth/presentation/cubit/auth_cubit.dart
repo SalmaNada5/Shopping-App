@@ -71,7 +71,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   void _checkUserExistence() async {
     String? userId = _sharedPreferences.getString('userId');
-    logWarning('id: $userId');
     if (userId != null && userId != '') {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -108,7 +107,7 @@ class AuthCubit extends Cubit<AuthState> {
       return LoginFailure();
     }, (r) {
       logSuccess('Logged in with Gmail with account: $r');
-      Constants.navigateTo(const MainPage());
+      Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return LoginSuccess();
     });
   }
@@ -124,6 +123,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  User? currentUser;
   AuthState _loginSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
       Constants.showSnackbar(l.message);
@@ -132,6 +132,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (r != null) {
         logSuccess('Logged in with account: $r');
         logWarning('$r');
+        currentUser = r;
         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
         return LoginSuccess();
       } else {
@@ -158,7 +159,7 @@ class AuthCubit extends Cubit<AuthState> {
       return LoginFailure();
     }, (r) {
       logSuccess('Logged in with Facebook with account: $r');
-      Constants.navigateTo(const MainPage());
+      Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return LoginSuccess();
     });
   }
@@ -187,11 +188,10 @@ class AuthCubit extends Cubit<AuthState> {
   AuthState _signUpSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
       Constants.showSnackbar(l.message);
-
       return SignUpFailure();
     }, (r) {
       logSuccess('Signed Up with account: $r');
-      Constants.navigateTo(const MainPage());
+      Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return SignUpSuccess();
     });
   }
@@ -235,7 +235,6 @@ class AuthCubit extends Cubit<AuthState> {
   String? checkEmailValidation(String value) {
     value = emailController.text;
     if (value.isEmpty) {
-      isValidEmail = false;
       emit(EmailValidationChangedState());
       return 'Please enter your e-mail';
     } else if (!value.isEmail) {
@@ -254,7 +253,6 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthInitial());
     value = passwordController.text;
     if (value.isEmpty) {
-      isValidPassword = false;
       emit(PasswordValidationChangedState());
       return 'Please enter your password';
     } else if (value.length < 8) {
@@ -305,4 +303,10 @@ class AuthCubit extends Cubit<AuthState> {
       }
     }
   }
+
+  // _clearTextControllers() {
+  //   nameController.clear();
+  //   emailController.clear();
+  //   passwordController.clear();
+  // }
 }

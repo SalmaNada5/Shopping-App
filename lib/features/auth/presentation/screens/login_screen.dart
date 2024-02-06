@@ -1,5 +1,6 @@
 import 'package:e_commerce/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:e_commerce/utils/exports.dart';
+import 'package:e_commerce/utils/extensions.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -10,9 +11,11 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: context.mediaQuery.viewInsets.bottom),
+          child: Wrap(
             children: [
               const AuthHeaderWidget(title: 'Login'),
               Form(
@@ -22,11 +25,11 @@ class LoginScreen extends StatelessWidget {
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
                         return AuthTextFormField(
+                          isValid: authCubit.isValidEmail,
                           controller: authCubit.emailController,
                           hintText: 'Email',
                           validator: (value) =>
                               authCubit.checkEmailValidation(value ?? ''),
-                          isValidInputData: authCubit.isValidEmail,
                         );
                       },
                     ),
@@ -40,7 +43,7 @@ class LoginScreen extends StatelessWidget {
                           hintText: 'Password',
                           validator: (value) =>
                               authCubit.checkPasswordValidation(value ?? ''),
-                          isValidInputData: authCubit.isValidPassword,
+                          isValid: authCubit.isValidPassword,
                         );
                       },
                     ),

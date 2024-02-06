@@ -6,14 +6,15 @@ class AuthTextFormField extends StatelessWidget {
     this.controller,
     required this.hintText,
     this.obscure = false,
-    required this.validator,
-    required this.isValidInputData,
+    this.validator,
+    required this.isValid,
   });
   final TextEditingController? controller;
   final String hintText;
   final bool obscure;
   final String? Function(String?)? validator;
-  final bool? isValidInputData;
+  final bool? isValid;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -40,9 +41,9 @@ class AuthTextFormField extends StatelessWidget {
           borderSide: const BorderSide(color: Colors.white),
           borderRadius: BorderRadius.circular(4),
         ),
-        suffixIcon: isValidInputData == null
+        suffixIcon: controller?.text == "" || isValid == null
             ? const SizedBox.shrink()
-            : isValidInputData!
+            : isValid ?? false
                 ? const Icon(
                     Icons.check,
                     color: Colors.green,
