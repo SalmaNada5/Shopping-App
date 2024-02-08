@@ -28,6 +28,7 @@ dependencies:
   flutter_animate: ^4.3.0
   flutter_facebook_auth: ^6.0.3
   cloud_firestore: ^4.13.6
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

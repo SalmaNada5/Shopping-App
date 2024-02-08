@@ -7,7 +7,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
+    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context,listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(

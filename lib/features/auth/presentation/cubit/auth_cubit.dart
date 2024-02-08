@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:e_commerce/features/auth/data/source/local/local_source.dart';
 import 'package:e_commerce/features/auth/domain/usecase/login.dart';
 import 'package:e_commerce/features/auth/domain/usecase/login_with_facebook.dart';
 import 'package:e_commerce/features/auth/domain/usecase/sign_out.dart';
@@ -9,7 +10,6 @@ import 'package:e_commerce/utils/exports.dart';
 import 'package:e_commerce/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'auth_state.dart';
 
@@ -19,8 +19,8 @@ class AuthCubit extends Cubit<AuthState> {
       this.signUpUseCase,
       this.loginUseCase,
       this.loginWithFacebookUseCase,
-      this._sharedPreferences,
-      this.signOutUseCase)
+      this.signOutUseCase,
+      this._authLocalSourceImplement)
       : super(AuthInitial());
   final SignUpUseCase signUpUseCase;
   final LoginWithGmailUseCase loginWithGmailUseCase;
@@ -28,8 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginWithFacebookUseCase loginWithFacebookUseCase;
   final SignOutUseCase signOutUseCase;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  final SharedPreferences _sharedPreferences;
+  final AuthLocalSourceImplement _authLocalSourceImplement;
   void init() async {
     _checkUserExistence();
 // //? check already signed in with google
@@ -70,7 +69,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void _checkUserExistence() async {
-    String? userId = _sharedPreferences.getString('userId');
     if (userId != null && userId != '') {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -86,6 +84,9 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  String? get userName => _authLocalSourceImplement.getUserName;
+  String? get userId => _authLocalSourceImplement.getUserId;
+  String? get userPhotoUrl => _authLocalSourceImplement.getUserPhotoUrl;
   //* login
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
@@ -107,6 +108,10 @@ class AuthCubit extends Cubit<AuthState> {
       return LoginFailure();
     }, (r) {
       logSuccess('Logged in with Gmail with account: $r');
+      _authLocalSourceImplement.setUserId(r.id);
+      _authLocalSourceImplement.setUserName(r.displayName ?? "");
+      _authLocalSourceImplement.setUserPhotoUrl(r.photoUrl ?? "");
+
       Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return LoginSuccess();
     });
@@ -123,7 +128,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  User? currentUser;
   AuthState _loginSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
       Constants.showSnackbar(l.message);
@@ -132,7 +136,10 @@ class AuthCubit extends Cubit<AuthState> {
       if (r != null) {
         logSuccess('Logged in with account: $r');
         logWarning('$r');
-        currentUser = r;
+        _authLocalSourceImplement.setUserId(r.uid);
+        _authLocalSourceImplement.setUserName(r.displayName ?? "");
+        _authLocalSourceImplement.setUserPhotoUrl(r.photoURL ?? "");
+
         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
         return LoginSuccess();
       } else {
@@ -191,6 +198,10 @@ class AuthCubit extends Cubit<AuthState> {
       return SignUpFailure();
     }, (r) {
       logSuccess('Signed Up with account: $r');
+      _authLocalSourceImplement.setUserId(r?.uid ?? '');
+      _authLocalSourceImplement.setUserName(r?.displayName ?? "");
+      _authLocalSourceImplement.setUserPhotoUrl(r?.photoURL ?? "");
+
       Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return SignUpSuccess();
     });
