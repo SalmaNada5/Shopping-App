@@ -45,6 +45,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
   void signOutFunction() {
     try {
       FirebaseAuth.instance.signOut();
+      logSuccess("Signed out successfully");
     } catch (e) {
       logError('error in signOutFunction');
       if (e is FirebaseAuthException) {

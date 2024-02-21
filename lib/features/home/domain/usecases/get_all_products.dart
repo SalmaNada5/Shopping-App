@@ -8,5 +8,5 @@ class GetAllProducts {
 
   GetAllProducts({required this.homeDomainRepo});
 
-  Either<Failure, List<Product>?> call() => homeDomainRepo.getAllProducts();
+  Future<Either<Failure, List<Product>>> call() => homeDomainRepo.getAllProducts();
 }

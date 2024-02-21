@@ -9,7 +9,7 @@ class Product {
   final num? rate;
   final num? salePercenage;
   final bool? isSoldOut;
-  final String? type;
+  final String? category;
 
   Product({
     this.id,
@@ -22,7 +22,7 @@ class Product {
     this.rate,
     this.salePercenage,
     this.isSoldOut,
-    this.type,
+    this.category,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) {
@@ -37,7 +37,7 @@ class Product {
         rate: map['rate'],
         salePercenage: map['salePercentage'],
         isSoldOut: map['isSoldOut'],
-        type: map['type']);
+        category: map['category']);
   }
 
   Map<String, dynamic> toMap() {
@@ -52,7 +52,7 @@ class Product {
       'rate': rate,
       'salePercenage': salePercenage,
       'isSoldOut': isSoldOut,
-      'type': type,
+      'category': category,
     };
   }
 }

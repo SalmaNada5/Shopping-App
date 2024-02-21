@@ -10,9 +10,9 @@ class HomeDataRepo implements HomeDomainRepo {
 
   HomeDataRepo({required this.homeRemoteSource});
   @override
-  Either<Failure, List<Product>?> getAllProducts() {
+  Future<Either<Failure, List<Product>>> getAllProducts() async{
     try {
-      final products = homeRemoteSource.getAllProductsFunction();
+      final products = await homeRemoteSource.getAllProductsFunction();
       if (products != null) {
         return Right(products);
       } else {

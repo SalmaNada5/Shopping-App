@@ -8,4 +8,6 @@ extension Edit on String {
 
 extension Update on BuildContext {
   MediaQueryData get mediaQuery => MediaQuery.of(this);
+  double get screenHeight => MediaQuery.sizeOf(this).height;
+  double get screenWidth => MediaQuery.sizeOf(this).width;
 }

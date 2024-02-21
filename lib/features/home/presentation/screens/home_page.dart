@@ -2,6 +2,7 @@ import 'package:e_commerce/features/home/presentation/cubit/home_cubit.dart';
 import 'package:e_commerce/features/home/presentation/widgets/product_card_widget.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,9 +13,9 @@ class HomePage extends StatelessWidget {
     HomeCubit homeCubit = BlocProvider.of(context, listen: false);
     homeCubit.getAllProducts();
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SafeArea(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -81,22 +82,34 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: homeCubit.productsList.length,
-                    itemBuilder: (context, index) => ProductCardWidget(
-                      rate: homeCubit.productsList[index].rate?.toDouble() ?? 0,
-                      brand: homeCubit.productsList[index].brand ?? "",
-                      name: homeCubit.productsList[index].name ?? "",
-                      price: homeCubit.productsList[index].price ?? 0,
-                      productImage: homeCubit.productsList[index].image ?? "",
-                      //isInFavorites: homeCubit.productsList[0],
-                      sale: homeCubit.productsList[index].salePercenage ?? 1,
-                    ),
-                  ),
-                )
+                BlocBuilder<HomeCubit, HomeState>(
+                    bloc: homeCubit,
+                    builder: (context, state) {
+                      return SizedBox(
+                        height: 200,
+                        child: Skeleton.leaf(
+                          enabled: homeCubit.productsLoading,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: homeCubit.productsList?.length ?? 4,
+                            itemBuilder: (context, index) => ProductCardWidget(
+                              rate: homeCubit.productsList?[index].rate
+                                      ?.toDouble() ??
+                                  0,
+                              brand: homeCubit.productsList?[index].brand ?? "",
+                              name: homeCubit.productsList?[index].name ?? "",
+                              price: homeCubit.productsList?[index].price ?? 0,
+                              productImage:
+                                  homeCubit.productsList?[index].image ?? "",
+                              //isInFavorites: homeCubit.productsList[0],
+                              sale: homeCubit
+                                      .productsList?[index].salePercenage ??
+                                  1,
+                            ),
+                          ),
+                        ),
+                      );
+                    })
               ],
             ),
           ),

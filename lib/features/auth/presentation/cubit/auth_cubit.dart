@@ -29,8 +29,29 @@ class AuthCubit extends Cubit<AuthState> {
   final SignOutUseCase signOutUseCase;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthLocalSourceImplement _authLocalSourceImplement;
-  void init() async {
-    _checkUserExistence();
+  Future<bool> init() async {
+    logWarning("user id: $userId");
+    if (userId != null && userId != '') {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (userDoc.exists) {
+        logWarning("exist");
+        Future.delayed(Duration.zero, () async {
+          await Constants.navigateTo(const HomePage(),
+              pushAndRemoveUntil: true);
+        });
+        return true;
+      }
+    } else {
+      Future.delayed(Duration.zero, () async {
+        await Constants.navigateTo(const LoginScreen(),
+            pushAndRemoveUntil: true);
+      });
+      return true;
+    }
+    return false;
 // //? check already signed in with google
 //     GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 //     try {
@@ -66,22 +87,6 @@ class AuthCubit extends Cubit<AuthState> {
 //         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
 //       }
 //     });
-  }
-
-  void _checkUserExistence() async {
-    if (userId != null && userId != '') {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userDoc.exists) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
-        });
-      }
-    } else {
-      logWarning('user with id: $userId does not exist!');
-    }
   }
 
   String? get userName => _authLocalSourceImplement.getUserName;

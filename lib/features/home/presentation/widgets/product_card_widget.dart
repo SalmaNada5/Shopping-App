@@ -1,3 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce/utils/exports.dart';
+import 'package:e_commerce/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -25,65 +28,69 @@ class ProductCardWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.fill, image: NetworkImage(productImage)),
-                borderRadius: BorderRadius.circular(12),
+        SizedBox(
+          height: 120,
+          child: Stack(
+            children: [
+              CachedNetworkImage(
+                imageUrl: productImage,
+                width: context.screenWidth * 0.3,
+                height: 110,
+                fit: BoxFit.contain,
+                imageBuilder: (context, imageProvider) => ClipRRect(borderRadius: BorderRadius.circular(12),),
+                placeholder: (context, url) =>
+                    Image.asset("assets/images/placeholder.png"),
               ),
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: sale != 1 ? Colors.red : Colors.black,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  sale != 1 ? "-$sale%" : "New",
-                  style: const TextStyle(
-                    color: Color(0xffffffff),
-                    fontSize: 14,
-                    fontFamily: 'Metropolis',
-                    fontWeight: FontWeight.w500,
+              Positioned(
+                top: 5,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: sale != 1 ? Colors.red : Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    sale != 1 ? "-$sale%" : "New",
+                    style: const TextStyle(
+                      color: Color(0xffffffff),
+                      fontSize: 14,
+                      fontFamily: 'Metropolis',
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black,
-                        offset: Offset(1, 1),
-                        blurRadius: 3,
-                      )
-                    ],
-                    color: Colors.white),
-                child: isInFavorites
-                    ? const Icon(
-                        CupertinoIcons.heart_fill,
-                        color: Colors.red,
-                        size: 16,
-                      )
-                    : const Icon(
-                        CupertinoIcons.heart,
-                        color: Colors.grey,
-                        size: 16,
-                      ),
+              Positioned(
+                right: 0,
+                bottom: 5,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black,
+                          offset: Offset(1, 1),
+                          blurRadius: 3,
+                        )
+                      ],
+                      color: Colors.white),
+                  child: isInFavorites
+                      ? const Icon(
+                          CupertinoIcons.heart_fill,
+                          color: Colors.red,
+                          size: 16,
+                        )
+                      : const Icon(
+                          CupertinoIcons.heart,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
+            ],
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -113,7 +120,7 @@ class ProductCardWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 10,
+          height: 8,
         ),
         Text(
           brand,
@@ -125,7 +132,7 @@ class ProductCardWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: 10,
+          height: 8,
         ),
         Text(
           name,
@@ -137,7 +144,7 @@ class ProductCardWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: 10,
+          height: 8,
         ),
         if (sale != 1) ...{
           Row(
