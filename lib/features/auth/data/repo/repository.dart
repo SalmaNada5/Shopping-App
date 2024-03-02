@@ -40,6 +40,7 @@ class AuthDataRepo implements AuthDomainRepo {
     try {
       authRemoteSourceImplement.signOutFunction();
       authLocalSourceImplement.removeUserId;
+      authLocalSourceImplement.removeUserName;
       return const Right(unit);
     } on FirebaseAuthException catch (e) {
       return Left(FirebaseFailure(message: e.message));
@@ -74,6 +75,8 @@ class AuthDataRepo implements AuthDomainRepo {
       final user =
           await authRemoteSourceImplement.loginFunction(email, password);
       authLocalSourceImplement.setUserId(user?.uid ?? '');
+      authLocalSourceImplement.setUserName(user?.displayName ?? '');
+
       return Right(user);
     } on FirebaseAuthException catch (e) {
       return Left(FirebaseFailure(message: e.message));

@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:e_commerce/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ProductCardWidget extends StatelessWidget {
@@ -32,14 +30,18 @@ class ProductCardWidget extends StatelessWidget {
           height: 120,
           child: Stack(
             children: [
-              CachedNetworkImage(
-                imageUrl: productImage,
-                width: context.screenWidth * 0.3,
-                height: 110,
-                fit: BoxFit.contain,
-                imageBuilder: (context, imageProvider) => ClipRRect(borderRadius: BorderRadius.circular(12),),
-                placeholder: (context, url) =>
-                    Image.asset("assets/images/placeholder.png"),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  productImage,
+                  width: context.screenWidth * 0.3,
+                  height: 110,
+                  fit: BoxFit.contain,
+                  // loadingBuilder: (context, child, loadingProgress) =>
+                  //     const CircularProgressIndicator(),
+                  errorBuilder: (context, url, error) =>
+                      Image.asset("assets/images/placeholder.png"),
+                ),
               ),
               Positioned(
                 top: 5,

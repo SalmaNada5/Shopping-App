@@ -39,7 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (userDoc.exists) {
         logWarning("exist");
         Future.delayed(Duration.zero, () async {
-          await Constants.navigateTo(const HomePage(),
+          await Constants.navigateTo(const MainPage(),
               pushAndRemoveUntil: true);
         });
         return true;
@@ -91,7 +91,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   String? get userName => _authLocalSourceImplement.getUserName;
   String? get userId => _authLocalSourceImplement.getUserId;
-  String? get userPhotoUrl => _authLocalSourceImplement.getUserPhotoUrl;
   //* login
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
@@ -115,7 +114,6 @@ class AuthCubit extends Cubit<AuthState> {
       logSuccess('Logged in with Gmail with account: $r');
       _authLocalSourceImplement.setUserId(r.id);
       _authLocalSourceImplement.setUserName(r.displayName ?? "");
-      _authLocalSourceImplement.setUserPhotoUrl(r.photoUrl ?? "");
 
       Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return LoginSuccess();
@@ -140,11 +138,8 @@ class AuthCubit extends Cubit<AuthState> {
     }, (r) {
       if (r != null) {
         logSuccess('Logged in with account: $r');
-        logWarning('$r');
         _authLocalSourceImplement.setUserId(r.uid);
         _authLocalSourceImplement.setUserName(r.displayName ?? "");
-        _authLocalSourceImplement.setUserPhotoUrl(r.photoURL ?? "");
-
         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
         return LoginSuccess();
       } else {
@@ -205,8 +200,6 @@ class AuthCubit extends Cubit<AuthState> {
       logSuccess('Signed Up with account: $r');
       _authLocalSourceImplement.setUserId(r?.uid ?? '');
       _authLocalSourceImplement.setUserName(r?.displayName ?? "");
-      _authLocalSourceImplement.setUserPhotoUrl(r?.photoURL ?? "");
-
       Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
       return SignUpSuccess();
     });

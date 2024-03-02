@@ -11,6 +11,7 @@ abstract class AuthRemoteSource {
   void signOutFunction();
   Future<User?> signUpFunction(String name, String email, String password);
   Future<User?> loginFunction(String email, String password);
+  Future<LoginResult?> logInWithFacebook();
 }
 
 class AuthRemoteSourceImplement implements AuthRemoteSource {
@@ -25,9 +26,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      _storeUserData(userCredential.user!);
+      await FirebaseAuth.instance.signInWithCredential(credential);
       return account;
     } catch (e) {
       logError('error in loginWithGoogleFunction: $e');
@@ -68,7 +67,8 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
         password: password,
       );
       await authResult.user!.updateDisplayName(name);
-      _storeUserData(authResult.user!);
+      _storeUserData(
+          email: email, name: name, userId: authResult.user?.uid ?? '');
 
       return authResult.user;
     } catch (e) {
@@ -92,7 +92,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
         password: password,
       );
       if (authResult.user != null) {
-        logSuccess('Sign in successfully: ${authResult.user?.displayName}');
+        logSuccess('Signed in successfully');
         return authResult.user;
       } else {
         logError('User information is null');
@@ -108,6 +108,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
     }
   }
 
+  @override
   Future<LoginResult?> logInWithFacebook() async {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
@@ -136,17 +137,19 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
     }
   }
 
-  void _storeUserData(User user) async {
+  void _storeUserData(
+      {required String email,
+      required String name,
+      required String userId}) async {
     // final userData = await FacebookAuth.instance.getUserData();
     CollectionReference usersCollection =
         FirebaseFirestore.instance.collection('users');
-    DocumentSnapshot userDoc = await usersCollection.doc(user.uid).get();
+    DocumentSnapshot userDoc = await usersCollection.doc(userId).get();
 
     if (!userDoc.exists) {
-      await usersCollection.doc(user.uid).set({
-        'displayName': user.displayName,
-        'email': user.email,
-        'photoURL': user.photoURL,
+      await usersCollection.doc(userId).set({
+        'displayName': name,
+        'email': email,
       });
       logInfo('New user added to firestore with id: ${userDoc.id}');
     }
