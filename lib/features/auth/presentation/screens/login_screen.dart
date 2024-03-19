@@ -1,12 +1,13 @@
 import 'package:e_commerce/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:e_commerce/utils/exports.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context, listen: false);
+    final AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -14,7 +15,7 @@ class LoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Wrap(
               children: [
-                const AuthHeaderWidget(title: 'Login'),
+                AuthHeaderWidget(title: 'Login'.tr()),
                 Form(
                   key: authCubit.loginFormKey,
                   child: Column(
@@ -24,7 +25,7 @@ class LoginScreen extends StatelessWidget {
                           return AuthTextFormField(
                             isValid: authCubit.isValidEmail,
                             controller: authCubit.emailController,
-                            hintText: 'Email',
+                            hintText: 'Email'.tr(),
                             validator: (value) =>
                                 authCubit.checkEmailValidation(value ?? ''),
                           );
@@ -37,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                         builder: (context, state) {
                           return AuthTextFormField(
                             controller: authCubit.passwordController,
-                            hintText: 'Password',
+                            hintText: 'Password'.tr(),
                             validator: (value) =>
                                 authCubit.checkPasswordValidation(value ?? ''),
                             isValid: authCubit.isValidPassword,
@@ -50,12 +51,12 @@ class LoginScreen extends StatelessWidget {
                       AuthAlreadyHaveAnAccountOrForgotPassWidget(
                           onTap: () => Constants.navigateTo(
                               const ForgotPasswordScreen()),
-                          title: 'Forgot your password?'),
+                          title: 'Forgot your password?'.tr()),
                       const SizedBox(
                         height: 40,
                       ),
                       AuthSubmitButton(
-                        title: 'LOGIN',
+                        title: 'LOGIN'.tr(),
                         onTap: () => authCubit.login(
                             email: authCubit.emailController.text.trim(),
                             password: authCubit.passwordController.text.trim()),

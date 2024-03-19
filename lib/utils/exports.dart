@@ -14,3 +14,4 @@ export 'package:e_commerce/features/auth/domain/usecase/login_with_gmail.dart';
 export 'package:e_commerce/features/auth/presentation/screens/login_screen.dart';
 export 'package:e_commerce/features/home/presentation/screens/home_page.dart';
 export 'package:e_commerce/utils/constants.dart';
+export 'package:firebase_core/firebase_core.dart';

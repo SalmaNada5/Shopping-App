@@ -4,6 +4,7 @@ import 'package:e_commerce/core/errors/failures.dart';
 import 'package:e_commerce/features/home/data/models/product_model.dart';
 import 'package:e_commerce/features/home/data/source/remote_source/home_remote_source.dart';
 import 'package:e_commerce/features/home/domain/repo/home_domain_rep.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeDataRepo implements HomeDomainRepo {
   final HomeRemoteSource homeRemoteSource;
@@ -19,11 +20,9 @@ class HomeDataRepo implements HomeDomainRepo {
         return const Left(OfflineFailure(message: "Can't get products"));
       }
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 }

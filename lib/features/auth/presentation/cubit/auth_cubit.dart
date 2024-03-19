@@ -8,6 +8,7 @@ import 'package:e_commerce/features/auth/domain/usecase/sign_up.dart';
 import 'package:e_commerce/features/home/presentation/screens/main_page.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:e_commerce/utils/extensions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
@@ -44,13 +45,14 @@ class AuthCubit extends Cubit<AuthState> {
         });
         return true;
       }
-    } else {
-      Future.delayed(Duration.zero, () async {
-        await Constants.navigateTo(const LoginScreen(),
-            pushAndRemoveUntil: true);
-      });
-      return true;
     }
+    // else {
+    //   Future.delayed(Duration.zero, () async {
+    //     await Constants.navigateTo(const SignUpScreen(),
+    //         pushAndRemoveUntil: true);
+    //   });
+    //   return true;
+    // }
     return false;
 // //? check already signed in with google
 //     GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
@@ -87,6 +89,29 @@ class AuthCubit extends Cubit<AuthState> {
 //         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
 //       }
 //     });
+  }
+
+  Future<bool> _doesUserEmailExist() async {
+    try {
+      List<String> methods = [];
+      Constants.showLoading();
+      methods = await FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(emailController.text.trim());
+      logWarning('$methods');
+      if (methods.isNotEmpty) {
+        logInfo('Email exist');
+        Constants.hideLoadingOrNavBack();
+        return true;
+      } else {
+        logInfo('Email not exist:${emailController.text.trim()}');
+        Constants.hideLoadingOrNavBack();
+        return false;
+      }
+    } catch (e) {
+      logError('error in _doesEmailExist: $e');
+      Constants.hideLoadingOrNavBack();
+      return false;
+    }
   }
 
   String? get userName => _authLocalSourceImplement.getUserName;
@@ -133,7 +158,13 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthState _loginSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
-      Constants.showSnackbar(l.message);
+      if (l.message == 'wrong-password') {
+        Constants.showSnackbar('Wrong Password!'.tr());
+      } else if (l.message == 'user-not-found') {
+        Constants.showSnackbar('Email doesn\'t exist! Try to Sign Up');
+      } else {
+        Constants.showSnackbar(l.message);
+      }
       return LoginFailure();
     }, (r) {
       if (r != null) {
@@ -141,6 +172,7 @@ class AuthCubit extends Cubit<AuthState> {
         _authLocalSourceImplement.setUserId(r.uid);
         _authLocalSourceImplement.setUserName(r.displayName ?? "");
         Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+        _clearTextControllers();
         return LoginSuccess();
       } else {
         return LoginFailure();
@@ -175,8 +207,7 @@ class AuthCubit extends Cubit<AuthState> {
   final signUpFormKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   void onTapAlreadyHaveAccountFunction() {
-    emailController.clear();
-    passwordController.clear();
+    _clearTextControllers();
     Constants.navigateTo(const LoginScreen());
   }
 
@@ -186,21 +217,30 @@ class AuthCubit extends Cubit<AuthState> {
       required String password}) async {
     if (signUpFormKey.currentState!.validate()) {
       emit(AuthInitial());
+      Constants.showLoading();
       final Either<Failure, User?> res =
           await signUpUseCase(name, email, password);
+      Constants.hideLoadingOrNavBack();
       emit(_signUpSuccessOrFailureState(res));
     }
   }
 
   AuthState _signUpSuccessOrFailureState(Either<Failure, User?> res) {
     return res.fold((l) {
-      Constants.showSnackbar(l.message);
+      if (l.message == 'email-already-in-use') {
+        Constants.showSnackbar(
+            'The account already exists for that email.'.tr());
+      } else {
+        Constants.showSnackbar(l.message);
+      }
       return SignUpFailure();
     }, (r) {
       logSuccess('Signed Up with account: $r');
       _authLocalSourceImplement.setUserId(r?.uid ?? '');
       _authLocalSourceImplement.setUserName(r?.displayName ?? "");
       Constants.navigateTo(const MainPage(), pushAndRemoveUntil: true);
+      _clearTextControllers();
+      r?.sendEmailVerification();
       return SignUpSuccess();
     });
   }
@@ -218,7 +258,9 @@ class AuthCubit extends Cubit<AuthState> {
       return SignOutFailure();
     }, (r) {
       logSuccess('Signed out Successfully');
-      Constants.navigateTo(const LoginScreen(), pushAndRemoveUntil: true);
+      Constants.navigateTo(const SignUpScreen(), pushAndRemoveUntil: true);
+      isValidEmail = null;
+      isValidPassword = null;
       return SignOutSuccess();
     });
   }
@@ -231,7 +273,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (value.isEmpty) {
       isValidName = false;
       emit(NameValidationChangedState());
-      return 'Please enter your name';
+      return 'Please enter your name'.tr();
     } else {
       isValidName = true;
       emit(NameValidationChangedState());
@@ -245,11 +287,11 @@ class AuthCubit extends Cubit<AuthState> {
     value = emailController.text;
     if (value.isEmpty) {
       emit(EmailValidationChangedState());
-      return 'Please enter your e-mail';
+      return 'Please enter your e-mail'.tr();
     } else if (!value.isEmail) {
       isValidEmail = false;
       emit(EmailValidationChangedState());
-      return 'Please Enter a valid e-mail';
+      return 'Please Enter a valid e-mail'.tr();
     } else {
       isValidEmail = true;
       emit(EmailValidationChangedState());
@@ -263,15 +305,15 @@ class AuthCubit extends Cubit<AuthState> {
     value = passwordController.text;
     if (value.isEmpty) {
       emit(PasswordValidationChangedState());
-      return 'Please enter your password';
+      return 'Please enter your password'.tr();
     } else if (value.length < 8) {
       isValidPassword = false;
       emit(PasswordValidationChangedState());
-      return 'Password must be at least 8 characters long';
+      return 'Password must be at least 8 characters long'.tr();
     } else if (value.length > 32) {
       isValidPassword = false;
       emit(PasswordValidationChangedState());
-      return 'Password must not be more than 32 characters long';
+      return 'Password must not be more than 32 characters long'.tr();
     } else {
       isValidPassword = true;
       emit(PasswordValidationChangedState());
@@ -286,8 +328,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (forgotPassFormKey.currentState!.validate()) {
       emit(AuthInitial());
       try {
-        logWarning('cur email ${_auth.currentUser?.email}');
-        if (_auth.currentUser?.email == emailController.text.trim()) {
+        if (await _doesUserEmailExist()) {
           await _auth.sendPasswordResetEmail(
               email: emailController.text.trim());
           logSuccess('email sent');
@@ -303,7 +344,7 @@ class AuthCubit extends Cubit<AuthState> {
           ScaffoldMessenger.of(Constants.navigatorKey.currentContext!)
               .showSnackBar(
             const SnackBar(
-              content: Text('This email doesn\'t match current user email!'),
+              content: Text('This email doesn\'t exist or Not Verified Yet!'),
             ),
           );
         }
@@ -313,9 +354,9 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  // _clearTextControllers() {
-  //   nameController.clear();
-  //   emailController.clear();
-  //   passwordController.clear();
-  // }
+  _clearTextControllers() {
+    nameController.clear();
+    emailController.clear();
+    passwordController.clear();
+  }
 }

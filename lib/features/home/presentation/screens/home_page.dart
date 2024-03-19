@@ -2,6 +2,7 @@ import 'package:e_commerce/features/home/presentation/cubit/home_cubit.dart';
 import 'package:e_commerce/features/home/presentation/widgets/list_item_shimmer_widget.dart';
 import 'package:e_commerce/features/home/presentation/widgets/product_card_widget.dart';
 import 'package:e_commerce/utils/exports.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,8 +10,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of(context, listen: false);
-    HomeCubit homeCubit = BlocProvider.of(context, listen: false);
+    final AuthCubit authCubit = BlocProvider.of(context);
+    final HomeCubit homeCubit = BlocProvider.of(context);
     homeCubit.getAllProducts();
     return Scaffold(
       body: SafeArea(
@@ -23,8 +24,8 @@ class HomePage extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AuthHeaderWidget(
-                      title: "Welcome back,",
+                    AuthHeaderWidget(
+                      title: "Welcome back".tr(),
                       fontSize: 22,
                       bottomPadding: 5,
                       topPadding: 0,
@@ -40,12 +41,12 @@ class HomePage extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Sale',
-                      style: TextStyle(
+                      'Sale'.tr(),
+                      style: const TextStyle(
                         color: Color(0xFF222222),
                         fontSize: 34,
                         fontFamily: 'Metropolis',
@@ -53,8 +54,8 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'View all',
-                      style: TextStyle(
+                      'View all'.tr(),
+                      style: const TextStyle(
                         color: Color(0xFF222222),
                         fontSize: 11,
                         fontFamily: 'Metropolis',
@@ -66,52 +67,51 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 BlocBuilder<HomeCubit, HomeState>(
-                    bloc: homeCubit,
-                    builder: (context, state) {
-                      return homeCubit.productsLoading
-                          ? Skeletonizer(
-                              enabled: homeCubit.productsLoading,
-                              child: SizedBox(
-                                height: 200,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: 4,
-                                  itemBuilder: (context, index) =>
-                                      const ListItemShimmerWidget(),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(
-                                    width: 10,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : SizedBox(
+                  bloc: homeCubit,
+                  builder: (context, state) {
+                    return homeCubit.productsLoading
+                        ? Skeletonizer(
+                            enabled: homeCubit.productsLoading,
+                            child: SizedBox(
                               height: 200,
-                              child: ListView.builder(
+                              child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: homeCubit.productsList?.length ?? 1,
+                                itemCount: 4,
                                 itemBuilder: (context, index) =>
-                                    ProductCardWidget(
-                                  rate: homeCubit.productsList?[index].rate
-                                          ?.toDouble() ??
-                                      0,
-                                  brand: homeCubit.productsList?[index].brand ??
-                                      "",
-                                  name:
-                                      homeCubit.productsList?[index].name ?? "",
-                                  price:
-                                      homeCubit.productsList?[index].price ?? 0,
-                                  productImage:
-                                      homeCubit.productsList?[index].image ??
-                                          "",
-                                  //isInFavorites: true,
-                                  sale: homeCubit
-                                          .productsList?[index].salePercenage ??
-                                      1,
+                                    const ListItemShimmerWidget(),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(
+                                  width: 10,
                                 ),
                               ),
-                            );
-                    },),
+                            ),
+                          )
+                        : SizedBox(
+                            height: 200,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: homeCubit.productsList?.length ?? 1,
+                              itemBuilder: (context, index) =>
+                                  ProductCardWidget(
+                                rate: homeCubit.productsList?[index].rate
+                                        ?.toDouble() ??
+                                    0,
+                                brand:
+                                    homeCubit.productsList?[index].brand ?? "",
+                                name: homeCubit.productsList?[index].name ?? "",
+                                price:
+                                    homeCubit.productsList?[index].price ?? 0,
+                                productImage:
+                                    homeCubit.productsList?[index].image ?? "",
+                                //isInFavorites: true,
+                                sale: homeCubit
+                                        .productsList?[index].salePercenage ??
+                                    1,
+                              ),
+                            ),
+                          );
+                  },
+                ),
               ],
             ),
           ),

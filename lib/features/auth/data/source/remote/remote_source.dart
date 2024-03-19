@@ -31,9 +31,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
     } catch (e) {
       logError('error in loginWithGoogleFunction: $e');
       if (e is FirebaseAuthException) {
-        throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if (e is FirebaseAuthException) {
-        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw ex.OfflineException('$e');
       }
@@ -44,13 +42,10 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
   void signOutFunction() {
     try {
       FirebaseAuth.instance.signOut();
-      logSuccess("Signed out successfully");
     } catch (e) {
       logError('error in signOutFunction');
       if (e is FirebaseAuthException) {
-        throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if (e is FirebaseAuthException) {
-        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw ex.OfflineException('$e');
       }
@@ -66,17 +61,14 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
         email: email,
         password: password,
       );
-      await authResult.user!.updateDisplayName(name);
+      // await authResult.user!.updateDisplayName(name);
       _storeUserData(
           email: email, name: name, userId: authResult.user?.uid ?? '');
-
       return authResult.user;
     } catch (e) {
       logError('Error in signUpFunction: $e');
       if (e is FirebaseAuthException) {
-        throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if (e is FirebaseAuthException) {
-        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw ex.OfflineException('$e');
       }
@@ -101,7 +93,7 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
     } catch (e) {
       logError('Error in loginFunction: $e');
       if (e is FirebaseAuthException) {
-        throw ex.FirebaseException(e.message ?? 'Error occured');
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw ex.OfflineException('$e');
       }
@@ -121,16 +113,14 @@ class AuthRemoteSourceImplement implements AuthRemoteSource {
       final userData = await FacebookAuth.instance.getUserData();
       await FirebaseFirestore.instance.collection('users').add({
         'email': userData['email'],
-        'password': userData['password'],
-        'name': userData['name']
+        //'password': userData['password'],
+        'displayName': userData['name']
       });
       return result;
     } catch (e) {
       logError('Error signing in with Facebook: $e');
       if (e is FirebaseAuthException) {
-        throw ex.FirebaseException(e.message ?? 'Error occured');
-      } else if (e is FirebaseAuthException) {
-        throw ex.FirebaseAuthException(e.message ?? 'Error occured');
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw ex.OfflineException('$e');
       }

@@ -1,4 +1,6 @@
+import 'package:e_commerce/features/home/settings/widgets/change_language_widget.dart';
 import 'package:e_commerce/utils/exports.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MainPage extends StatefulWidget {
@@ -24,7 +26,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
-
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
           onTap: onChangeIndex,
@@ -95,11 +96,31 @@ class _MainPageState extends State<MainPage> {
           const Center(),
           const Center(),
           Center(
-            child: TextButton(
-                style: const ButtonStyle(
-                    foregroundColor: MaterialStatePropertyAll(Colors.red)),
-                onPressed: () => authCubit.signOutFunction(),
-                child: const Text('LOGOUT')),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Change Language'.tr(),
+                      style: const TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 16,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const ChangeLanguageWidget(),
+                  ],
+                ),
+                TextButton(
+                    style: const ButtonStyle(
+                        foregroundColor: MaterialStatePropertyAll(Colors.red)),
+                    onPressed: () => authCubit.signOutFunction(),
+                    child: const Text('LOGOUT')),
+              ],
+            ),
           ),
         ],
       ),

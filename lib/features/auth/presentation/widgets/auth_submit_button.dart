@@ -10,7 +10,7 @@ class AuthSubmitButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 140, vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: ShapeDecoration(
           color: const Color(0xFFDB3022),
           shape: RoundedRectangleBorder(

@@ -1,4 +1,5 @@
 import 'package:e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,11 +13,13 @@ class AuthLoginOrSignUpWithSocialAccountWidget extends StatelessWidget {
   final String text; //this text used to specific it's login or signup
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
+    final AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
     return Column(
       children: [
         Text(
-          'Or $text with social account',
+          text.contains('Sign')
+              ? "Or Sign up with social account".tr()
+              : "Or Login with social account".tr(),
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Color(0xFF222222),

@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:e_commerce/core/errors/exceptions.dart';
-import 'package:e_commerce/core/errors/failures.dart';
 import 'package:e_commerce/features/auth/data/source/local/local_source.dart';
 import 'package:e_commerce/features/auth/data/source/remote/remote_source.dart';
 import 'package:e_commerce/features/auth/domain/repo/repository.dart';
+import 'package:e_commerce/utils/exports.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthDataRepo implements AuthDomainRepo {
   final AuthRemoteSourceImplement authRemoteSourceImplement;
@@ -27,11 +27,9 @@ class AuthDataRepo implements AuthDomainRepo {
         return const Left(OfflineFailure(message: 'No account selected'));
       }
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseAuthFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 
@@ -43,11 +41,9 @@ class AuthDataRepo implements AuthDomainRepo {
       authLocalSourceImplement.removeUserName;
       return const Right(unit);
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseAuthFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 
@@ -58,13 +54,12 @@ class AuthDataRepo implements AuthDomainRepo {
       final user =
           await authRemoteSourceImplement.signUpFunction(name, email, password);
       authLocalSourceImplement.setUserId(user?.uid ?? '');
+      authLocalSourceImplement.setUserName(user?.displayName ?? name);
       return Right(user);
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseAuthFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 
@@ -79,11 +74,9 @@ class AuthDataRepo implements AuthDomainRepo {
 
       return Right(user);
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseAuthFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 
@@ -94,11 +87,9 @@ class AuthDataRepo implements AuthDomainRepo {
       authLocalSourceImplement.setUserId(user?.accessToken?.userId ?? '');
       return Right(user);
     } on FirebaseAuthException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
+      return Left(FirebaseAuthFailure(message: e.code));
     } on OfflineException catch (e) {
       return Left(OfflineFailure(message: e.message));
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message));
     }
   }
 }

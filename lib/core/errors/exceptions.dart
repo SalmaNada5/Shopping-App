@@ -7,9 +7,9 @@ class FirebaseException implements Exception {
   String toString() => 'FirebaseException: $message';
 }
 
-class FirebaseAuthException extends FirebaseException {
-  FirebaseAuthException(String message) : super(message);
-}
+// class FirebaseAuthException extends FirebaseException {
+//   FirebaseAuthException(String message) : super(message);
+// }
 
 class FirebaseDatabaseException extends FirebaseException {
   FirebaseDatabaseException(String message) : super(message);
@@ -19,9 +19,3 @@ class OfflineException implements Exception {
 
   OfflineException(this.message);
 }
-// class ServerException implements Exception {
-//   final String message;
-//   final int statusCode;
-
-//   ServerException({required this.message, required this.statusCode});
-// }

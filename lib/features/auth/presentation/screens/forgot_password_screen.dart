@@ -1,11 +1,12 @@
 import 'package:e_commerce/utils/exports.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
+    final AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       body: SafeArea(
           child: Padding(
@@ -13,13 +14,14 @@ class ForgotPasswordScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AuthHeaderWidget(
-              title: 'Forgot password',
+            AuthHeaderWidget(
+              title: 'Forgot password'.tr(),
               bottomPadding: 140,
             ),
-            const Text(
-              'Please, enter your email address. You will receive a link to create a new password via email.',
-              style: TextStyle(
+            Text(
+              'Please, enter your email address. You will receive a link to create a new password via email.'
+                  .tr(),
+              style: const TextStyle(
                 color: Color(0xFF222222),
                 fontSize: 14,
                 fontFamily: 'Metropolis',
@@ -38,7 +40,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   child: AuthTextFormField(
                     isValid: authCubit.isValidPassword,
                     controller: authCubit.emailController,
-                    hintText: 'Email',
+                    hintText: 'Email'.tr(),
                     validator: (value) =>
                         authCubit.checkEmailValidation(value ?? ''),
                   ),
@@ -49,7 +51,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               height: 40,
             ),
             AuthSubmitButton(
-              title: 'Send',
+              title: 'Send'.tr(),
               onTap: () => authCubit.onForgotPasswordSendButtonTapped(),
             ),
           ],

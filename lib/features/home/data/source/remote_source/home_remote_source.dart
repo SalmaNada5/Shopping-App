@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/core/errors/exceptions.dart';
 import 'package:e_commerce/features/home/data/models/product_model.dart';
 import 'package:e_commerce/utils/exports.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class HomeRemoteSource {
   Future<List<Product>>? getAllProductsFunction();
@@ -34,7 +35,7 @@ class HomeRemoteSourceImlp implements HomeRemoteSource {
     } catch (e) {
       logError("error in getAllProductsFunction: $e}");
       if (e is FirebaseAuthException) {
-        throw FirebaseAuthException(e.message);
+        throw FirebaseAuthException(code: e.code);
       } else {
         throw OfflineException('$e');
       }

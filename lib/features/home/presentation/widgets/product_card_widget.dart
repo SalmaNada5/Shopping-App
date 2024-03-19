@@ -37,8 +37,6 @@ class ProductCardWidget extends StatelessWidget {
                   width: context.screenWidth * 0.3,
                   height: 110,
                   fit: BoxFit.contain,
-                  // loadingBuilder: (context, child, loadingProgress) =>
-                  //     const CircularProgressIndicator(),
                   errorBuilder: (context, url, error) =>
                       Image.asset("assets/images/placeholder.png"),
                 ),
