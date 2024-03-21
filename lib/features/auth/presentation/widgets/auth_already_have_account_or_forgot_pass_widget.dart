@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class AuthAlreadyHaveAnAccountOrForgotPassWidget extends StatelessWidget {
   const AuthAlreadyHaveAnAccountOrForgotPassWidget(
@@ -27,7 +28,7 @@ class AuthAlreadyHaveAnAccountOrForgotPassWidget extends StatelessWidget {
             color: Color(0xffDB3022),
           )
         ],
-      ),
+      ).animate().slideY().fade(),
     );
   }
 }

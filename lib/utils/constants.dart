@@ -1,4 +1,6 @@
 import 'dart:io';
+
+import 'package:e_commerce/utils/exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -38,7 +40,35 @@ mixin Constants {
   static void showSnackbar(String message) {
     ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
       SnackBar(
-        content: Text(message),
+        backgroundColor: Colors.white,
+        dismissDirection: DismissDirection.down,
+        duration: const Duration(seconds: 5),
+        clipBehavior: Clip.hardEdge,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Flexible(
+                child: Text(
+              message,
+              style: const TextStyle(color: Colors.black, fontSize: 13),
+              overflow: TextOverflow.visible,
+            )),
+            const SizedBox(
+              width: 5,
+            ),
+            const Icon(
+              Icons.info_outline,
+              color: Colors.red,
+              size: 20,
+            )
+          ],
+        ),
+        behavior: SnackBarBehavior.floating,
+        elevation: 20,
+        margin: const EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+            side: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

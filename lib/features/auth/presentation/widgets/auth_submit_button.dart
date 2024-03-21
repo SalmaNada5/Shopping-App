@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:e_commerce/utils/exports.dart';
 
 class AuthSubmitButton extends StatelessWidget {
   const AuthSubmitButton({super.key, required this.title, this.onTap});
@@ -35,6 +35,6 @@ class AuthSubmitButton extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ).animate().slideY().fade();
   }
 }

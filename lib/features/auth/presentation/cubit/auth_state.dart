@@ -22,3 +22,4 @@ final class NameValidationChangedState extends AuthState {}
 final class SignOutSuccess extends AuthState {}
 
 final class SignOutFailure extends AuthState {}
+final class ObsecureTextChanged extends AuthState {}

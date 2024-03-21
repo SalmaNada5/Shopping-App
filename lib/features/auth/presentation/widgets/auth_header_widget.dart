@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:e_commerce/utils/exports.dart';
 
 class AuthHeaderWidget extends StatelessWidget {
   const AuthHeaderWidget(
@@ -9,7 +9,7 @@ class AuthHeaderWidget extends StatelessWidget {
       this.fontSize = 36});
   final String title;
   final double bottomPadding;
-    final double topPadding;
+  final double topPadding;
 
   final double? fontSize;
   @override
@@ -25,6 +25,6 @@ class AuthHeaderWidget extends StatelessWidget {
           fontWeight: FontWeight.w900,
         ),
       ),
-    );
+    ).animate().slideY().fade();
   }
 }

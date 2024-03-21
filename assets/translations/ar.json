@@ -22,5 +22,10 @@
     "Please Enter a valid e-mail": "الرجاء إدخال بريد إلكتروني صالح",
     "Please enter your password": "الرجاء إدخال كلمة المرور الخاصة بك",
     "Password must be at least 8 characters long": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-    "Password must not be more than 32 characters long": "يجب ألا تتجاوز كلمة المرور 32 حرفًا"
+    "Password must not be more than 32 characters long": "يجب ألا تتجاوز كلمة المرور 32 حرفًا",
+    "Sorry, we couldn't find this email address or it hasn't been verified yet. Please double-check your email or verify your account if you haven't already.": "عذرًا، لم نتمكن من العثور على هذا البريد الإلكتروني أو لم يتم التحقق منه بعد. يرجى التحقق مرة أخرى من عنوان البريد الإلكتروني الخاص بك أو التحقق من حسابك إذا لم تقم بذلك بالفعل.",
+    "Success! We've sent you an email to reset your password. Please log in again using your new password.": "نجاح! لقد أرسلنا لك بريدًا إلكترونيًا لإعادة تعيين كلمة المرور الخاصة بك. يرجى تسجيل الدخول مرة أخرى باستخدام كلمة المرور الجديدة الخاصة بك.",
+    "We couldn't find this email. Consider signing up if you're new!": "لم نتمكن من العثور على هذا البريد الإلكتروني. يمكنك التفكير في التسجيل إذا كنت جديدًا!",
+    "An unexpected error occurred. Please try again later": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقًا.",
+    "Sorry, the password you entered is incorrect. Please double-check your password and try again": "عذرًا، كلمة المرور التي أدخلتها غير صحيحة. يرجى التحقق مرة أخرى من كلمة المرور الخاصة بك والمحاولة مرة أخرى."
 }

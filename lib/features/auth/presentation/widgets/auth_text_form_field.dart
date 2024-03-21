@@ -7,14 +7,12 @@ class AuthTextFormField extends StatelessWidget {
     required this.hintText,
     this.obscure = false,
     this.validator,
-    required this.isValid,
     this.suffixIcon,
   });
   final TextEditingController? controller;
   final String hintText;
   final bool obscure;
   final String? Function(String?)? validator;
-  final bool? isValid;
   final Widget? suffixIcon;
 
   @override
@@ -46,6 +44,6 @@ class AuthTextFormField extends StatelessWidget {
           suffixIcon: suffixIcon),
       obscureText: obscure,
       validator: validator,
-    );
+    ).animate().slideY().fade();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:e_commerce/utils/exports.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -31,7 +32,6 @@ class SignUpScreen extends StatelessWidget {
                                           current is NameValidationChangedState,
                                       builder: (context, state) {
                                         return AuthTextFormField(
-                                          isValid: authCubit.isValidName,
                                           controller: authCubit.nameController,
                                           hintText: 'Name'.tr(),
                                           validator: (value) => authCubit
@@ -50,7 +50,6 @@ class SignUpScreen extends StatelessWidget {
                                       current is EmailValidationChangedState,
                                   builder: (context, state) {
                                     return AuthTextFormField(
-                                      isValid: authCubit.isValidEmail,
                                       controller: authCubit.emailController,
                                       hintText: 'Email'.tr(),
                                       validator: (value) => authCubit
@@ -63,15 +62,28 @@ class SignUpScreen extends StatelessWidget {
                                 ),
                                 BlocBuilder<AuthCubit, AuthState>(
                                   bloc: authCubit,
-                                  buildWhen: (previous, current) =>
-                                      current is PasswordValidationChangedState,
                                   builder: (context, state) {
                                     return AuthTextFormField(
-                                      isValid: authCubit.isValidPassword,
                                       controller: authCubit.passwordController,
                                       hintText: 'Password'.tr(),
                                       validator: (value) => authCubit
                                           .checkPasswordValidation(value ?? ''),
+                                      obscure: authCubit.signupObscure,
+                                      suffixIcon: GestureDetector(
+                                        child: authCubit.signupObscure
+                                            ? const Icon(
+                                                CupertinoIcons.eye_slash_fill,
+                                                size: 20,
+                                                color: Colors.grey,
+                                              )
+                                            : const Icon(
+                                                CupertinoIcons.eye_fill,
+                                                size: 20,
+                                                color: Colors.grey,
+                                              ),
+                                        onTap: () => authCubit.changeObsecure(
+                                            fromSignup: true),
+                                      ),
                                     );
                                   },
                                 ),

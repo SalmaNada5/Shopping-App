@@ -22,5 +22,10 @@
     "Please Enter a valid e-mail": "Please Enter a valid e-mail",
     "Please enter your password": "Please enter your password",
     "Password must be at least 8 characters long": "Password must be at least 8 characters long",
-    "Password must not be more than 32 characters long": "Password must not be more than 32 characters long"
+    "Password must not be more than 32 characters long": "Password must not be more than 32 characters long",
+    "Sorry, we couldn't find this email address or it hasn't been verified yet. Please double-check your email or verify your account if you haven't already.": "Sorry, we couldn't find this email address or it hasn't been verified yet. Please double-check your email or verify your account if you haven't already.",
+    "Success! We've sent you an email to reset your password. Please log in again using your new password.": "Success! We've sent you an email to reset your password. Please log in again using your new password.",
+    "We couldn't find this email. Consider signing up if you're new!": "We couldn't find this email. Consider signing up if you're new!",
+    "An unexpected error occurred. Please try again later": "An unexpected error occurred. Please try again later",
+    "Sorry, the password you entered is incorrect. Please double-check your password and try again": "Sorry, the password you entered is incorrect. Please double-check your password and try again"
 }
