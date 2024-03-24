@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:e_commerce/features/home/data/models/product_model.dart';
 import 'package:e_commerce/features/home/domain/usecases/get_all_products.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:equatable/equatable.dart';
@@ -32,20 +31,36 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-//? add new product to collection
-  void addProduct() {
-    FirebaseFirestore.instance.collection('products').add({
-      'name': 'Product Name',
-      'description': 'Product Description',
-      'price': 19.99,
-      'imageUrl': 'https://example.com/product.jpg',
-      'category': 'Electronics',
-      'brand': '',
-      'sale': 15,
-    }).then((value) {
-      logInfo("Product Added");
-    }).catchError((error) {
-      logError("Failed to add product: $error");
-    });
+  List<Product> getOnSaleProducts() {
+    return productsList
+            ?.where((product) => product.salePercentage != 1)
+            .toList() ??
+        [];
+  }
+
+  List<Product> getNewProducts() {
+    final now = Timestamp.now();
+    const thresholdDuration = Duration(days: 7);
+    return productsList
+            ?.where((product) =>
+                product.createdAt
+                    ?.toDate()
+                    .isAfter(now.toDate().subtract(thresholdDuration)) ??
+                false)
+            .toList() ??
+        [];
+  }
+
+//? add new product to collection (admin)
+  Future<void> addProduct(Product product) async {
+    try {
+      CollectionReference products =
+          FirebaseFirestore.instance.collection('products');
+      Map<String, dynamic> productData = product.toJson();
+      await products.add(productData);
+      logWarning('Product added successfully');
+    } catch (e) {
+      logError('Error adding product: $e');
+    }
   }
 }

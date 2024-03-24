@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/features/home/settings/widgets/change_language_widget.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,6 +26,8 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
+    final HomeCubit homeCubit = BlocProvider.of<HomeCubit>(context);
+
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
           onTap: onChangeIndex,
@@ -118,6 +121,20 @@ class _MainPageState extends State<MainPage> {
                         foregroundColor: MaterialStatePropertyAll(Colors.red)),
                     onPressed: () => authCubit.signOutFunction(),
                     child: const Text('LOGOUT')),
+                TextButton(
+                    onPressed: () => homeCubit.addProduct(Product(
+                          name: 'Gray Pants',
+                          brand: 'Mango',
+                          rate: 3,
+                          price: 10,
+                          image:
+                              'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHBhbnRzfGVufDB8fDB8fHww',
+                          salePercentage: 1,
+                          isSoldOut: false,
+                          category: 'women',
+                          createdAt: Timestamp.now(),
+                        )),
+                    child: const Text('Add'))
               ],
             ),
           ),

@@ -17,3 +17,8 @@ export 'package:e_commerce/utils/constants.dart';
 export 'package:firebase_core/firebase_core.dart';
 export 'package:flutter_animate/flutter_animate.dart';
 export 'package:flutter_svg/flutter_svg.dart';
+export 'package:e_commerce/features/home/data/models/product_model.dart';
+export 'package:e_commerce/features/home/presentation/cubit/home_cubit.dart';
+export 'package:e_commerce/features/home/presentation/widgets/list_item_shimmer_widget.dart';
+export 'package:e_commerce/features/home/presentation/widgets/product_card_widget.dart';
+export 'package:e_commerce/features/home/presentation/widgets/products_listview_widget.dart';

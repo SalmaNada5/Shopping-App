@@ -4,22 +4,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ProductCardWidget extends StatelessWidget {
-  const ProductCardWidget(
-      {super.key,
-      this.sale = 1,
-      required this.rate,
-      required this.brand,
-      required this.name,
-      required this.price,
-      required this.productImage,
-      this.isInFavorites = false});
+  const ProductCardWidget({
+    super.key,
+    this.sale = 1,
+    required this.rate,
+    required this.brand,
+    required this.name,
+    required this.price,
+    required this.productImage,
+    this.isNew = false,
+  });
   final num sale;
   final double rate;
   final String brand;
   final String name;
   final num price;
   final String productImage;
-  final bool isInFavorites;
+  final bool? isNew;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -34,24 +35,25 @@ class ProductCardWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
                   productImage,
-                  width: context.screenWidth * 0.3,
+                  width: context.screenWidth * 0.25,
                   height: 110,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.fill,
                   errorBuilder: (context, url, error) =>
                       Image.asset("assets/images/placeholder.png"),
                 ),
               ),
               Positioned(
                 top: 5,
-                left: 8,
+                left: 5,
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: sale != 1 ? Colors.red : Colors.black,
+                    color:
+                        sale != 1 && isNew != true ? Colors.red : Colors.black,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    sale != 1 ? "-$sale%" : "New",
+                    sale != 1 && isNew != true ? "-$sale%" : "New",
                     style: const TextStyle(
                       color: Color(0xffffffff),
                       fontSize: 14,
@@ -65,29 +67,29 @@ class ProductCardWidget extends StatelessWidget {
                 right: 0,
                 bottom: 5,
                 child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black,
-                          offset: Offset(1, 1),
-                          blurRadius: 3,
-                        )
-                      ],
-                      color: Colors.white),
-                  child: isInFavorites
-                      ? const Icon(
-                          CupertinoIcons.heart_fill,
-                          color: Colors.red,
-                          size: 16,
-                        )
-                      : const Icon(
-                          CupertinoIcons.heart,
-                          color: Colors.grey,
-                          size: 16,
-                        ),
-                ),
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(1, 1),
+                            blurRadius: 3,
+                          )
+                        ],
+                        color: Colors.white),
+                    //TODO handle add item to favorites
+                    child: const Icon(
+                      CupertinoIcons.heart_fill,
+                      color: Colors.red,
+                      size: 16,
+                    )
+                    // : const Icon(
+                    //     CupertinoIcons.heart,
+                    //     color: Colors.grey,
+                    //     size: 16,
+                    //   ),
+                    ),
               ),
             ],
           ),
@@ -146,7 +148,7 @@ class ProductCardWidget extends StatelessWidget {
         const SizedBox(
           height: 8,
         ),
-        if (sale != 1) ...{
+        if (sale != 1 && isNew != true) ...{
           Row(
             children: [
               Text(

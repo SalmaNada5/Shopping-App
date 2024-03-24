@@ -1,4 +1,3 @@
-import 'package:e_commerce/features/home/presentation/cubit/home_cubit.dart';
 import 'package:e_commerce/utils/exports.dart';
 import 'package:easy_localization/easy_localization.dart';
 

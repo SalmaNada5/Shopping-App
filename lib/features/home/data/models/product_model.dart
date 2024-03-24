@@ -1,58 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Product {
-  final String? id;
   final String? name;
   final String? brand;
   final num? price;
   final String? image;
-  final bool? isNew;
-  final bool? isSale;
   final num? rate;
-  final num? salePercenage;
+  final num? salePercentage;
   final bool? isSoldOut;
   final String? category;
+  final Timestamp? createdAt;
 
   Product({
-    this.id,
     this.name,
     this.brand,
     this.price,
     this.image,
-    this.isNew,
-    this.isSale,
     this.rate,
-    this.salePercenage,
+    this.salePercentage,
     this.isSoldOut,
     this.category,
+    this.createdAt,
   });
 
-  factory Product.fromMap(Map<String, dynamic> map) {
+  factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-        id: map['id'],
-        name: map['name'],
-        brand: map['brand'],
-        price: map['price']?.toDouble() ?? 0.0,
-        image: map['image'],
-        isNew: map['isNew'],
-        isSale: map['isSale'],
-        rate: map['rate'],
-        salePercenage: map['salePercentage'],
-        isSoldOut: map['isSoldOut'],
-        category: map['category']);
+      name: json['name'],
+      brand: json['brand'],
+      price: json['price']?.toDouble() ?? 0.0,
+      image: json['image'],
+      rate: json['rate'],
+      salePercentage: json['salePercentage'],
+      isSoldOut: json['isSoldOut'],
+      category: json['category'],
+      createdAt: json['createdAt'],
+    );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
       'brand': brand,
       'price': price,
       'image': image,
-      'isNew': isNew,
-      'isSale': isSale,
       'rate': rate,
-      'salePercenage': salePercenage,
+      'salePercentage': salePercentage,
       'isSoldOut': isSoldOut,
       'category': category,
+      'createdAt': createdAt,
     };
   }
 }
